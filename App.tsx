@@ -1,39 +1,47 @@
 import { StatusBar } from 'expo-status-bar';
-import { Image, StyleSheet, Text, ScrollView, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Stock from './components/Stock';
-import warehouse from './assets/warehouse.jpg';
+import Home from "./components/Home";
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Base } from './styles';
+import { useState } from 'react';
+import Pick from "./components/Pick"
 
 export default function App() {
+  const Tab = createBottomTabNavigator();
+  const [products, setProducts] = useState<any[]>([]);
+
   return (
-    <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.container}>
-          <Text style={{color: '#03c588', fontSize: 42, alignSelf: 'center'}}>Lager-Appen</Text>
-          <Image source={warehouse} style={styles.image} />
-          <Stock />
-          <StatusBar style="auto" />
-        </ScrollView>
+    <SafeAreaView style={Base.container}>
+      <NavigationContainer>
+      <Tab.Navigator screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+        let iconName;
+
+        if (route.name === "Lager") {
+            iconName = "home";
+        } else if (route.name === "Plock")  {
+            iconName = "list";
+        } else {
+            iconName = "alert";
+        }
+
+        return <Ionicons name={iconName} size={size} color={color} />;
+    },
+    tabBarActiveTintColor: '#03c588',
+    tabBarInactiveTintColor: 'gray',
+  })}
+>
+<Tab.Screen name="Lager">
+  {() => <Home products={products} setProducts={setProducts} />}
+</Tab.Screen>
+<Tab.Screen name="Plock">
+  {() => <Pick setProducts={setProducts} />}
+</Tab.Screen>
+</Tab.Navigator>
+      </NavigationContainer>
+      <StatusBar style="auto" />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#111',
-    color: '#fff',
-  },
-  base: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingLeft: 12,
-    paddingRight: 12,
-  },
-  image: {
-    width: 320,
-    height: 240,
-    borderColor: '#fff',
-    borderWidth: 5,
-    alignSelf: 'center',
-  },
-});
